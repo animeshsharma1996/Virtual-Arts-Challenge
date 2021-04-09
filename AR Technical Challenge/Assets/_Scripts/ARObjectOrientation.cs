@@ -43,8 +43,7 @@ public class ARObjectOrientation : MonoBehaviour
 
                 case TouchPhase.Moved:
                     direction = touch.position - startPos;
-                    //transform.Rotate(-direction * rotationSpeed);
-                    transform.Rotate(-direction.y * rotationSpeed, -direction.x * rotationSpeed, 0f);
+                    transform.Rotate(-  direction.y * rotationSpeed, - direction.x * rotationSpeed, 0f);
                     setRotationButton.gameObject.SetActive(true);
                     break;
 

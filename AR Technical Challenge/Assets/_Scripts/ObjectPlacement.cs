@@ -14,9 +14,11 @@ public class ObjectPlacement : MonoBehaviour
 
     [SerializeField] private Button nextButton = null;
     [SerializeField] private Button setRotationButton = null;
+    [SerializeField] private Button recalibrateButton = null;
     [SerializeField] private TMP_Text objectPlacedText = null;
     [SerializeField] private TMP_Text objectRotatedText = null;
     [SerializeField] private TMP_Text calibrationCompleteText = null;
+    [SerializeField] private TMP_Text gameSceneText = null;
 
     private ARRaycastManager raycastManager;
     private Pose placementPose;
@@ -34,6 +36,9 @@ public class ObjectPlacement : MonoBehaviour
 
         setRotationButton.onClick.RemoveAllListeners();
         setRotationButton.onClick.AddListener(SetARObjectRotation);
+
+        recalibrateButton.onClick.RemoveAllListeners();
+        recalibrateButton.onClick.AddListener(Recalibrate);
 
         hasInstantiated = false;
         objectPlaced = false;
@@ -65,7 +70,7 @@ public class ObjectPlacement : MonoBehaviour
                 if (touch.phase == TouchPhase.Began)
                 {
                     placedObject = Instantiate(objectToPlace);
-                    rotateAR = placedObject.GetComponent<ARObjectOrientation>();
+                    rotateAR = placedObject.GetComponentInChildren<ARObjectOrientation>();
                     rotateAR.SetRotationButton(setRotationButton);
                     hasInstantiated = true;
 
@@ -110,6 +115,8 @@ public class ObjectPlacement : MonoBehaviour
         objectRotatedText.gameObject.SetActive(false);
         calibrationCompleteText.gameObject.SetActive(false);
 
+        recalibrateButton.gameObject.SetActive(true);
+        gameSceneText.gameObject.SetActive(true);
         rotateAR.SetHasCalibrated(true);
     }
 
@@ -120,6 +127,16 @@ public class ObjectPlacement : MonoBehaviour
         calibrationCompleteText.gameObject.SetActive(true);
         nextButton.gameObject.SetActive(true);
         objectRotated = true;
+    }
+
+    private void Recalibrate()
+    {
+        objectPlaced = false;
+        objectRotated = false;
+
+        recalibrateButton.gameObject.SetActive(false);
+        gameSceneText.gameObject.SetActive(false);
+        rotateAR.SetHasCalibrated(false);
     }
 
     private void UpdatePlacementIndicator()
