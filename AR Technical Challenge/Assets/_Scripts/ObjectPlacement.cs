@@ -110,6 +110,8 @@ public class ObjectPlacement : MonoBehaviour
 
     private void Recalibrate()
     {
+        rotateAR.ResetTransformsComponents();
+
         objectPlaced = false;
         objectRotated = false;
 
