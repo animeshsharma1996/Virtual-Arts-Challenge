@@ -8,6 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/SplashScreen.unity
     guid: 1883aad18d145a2499269ed9d1c50d76
+  - enabled: 1
+    path: Assets/_Scenes/CalibrationScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/_Scenes/GameScene.unity
+    guid: 134962ebbb362c44b97e5146039ae28b
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: fd995c6c68a1a8e4885e29776f896319, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 3cec73cd3477b2a4394fef2ea976f602, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 0ac92ee876b433f438f73114c794128f, type: 2}
