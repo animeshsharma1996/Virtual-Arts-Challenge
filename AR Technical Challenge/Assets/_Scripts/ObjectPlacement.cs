@@ -24,7 +24,6 @@ public class ObjectPlacement : MonoBehaviour
     private Pose placementPose;
     private ARObjectOrientation rotateAR;
     private bool isPlacementValid = false;
-    private bool hasInstantiated = false;
     private bool objectPlaced = false;
     private bool objectRotated = false;
     private GameObject placedObject;
@@ -40,7 +39,6 @@ public class ObjectPlacement : MonoBehaviour
         recalibrateButton.onClick.RemoveAllListeners();
         recalibrateButton.onClick.AddListener(Recalibrate);
 
-        hasInstantiated = false;
         objectPlaced = false;
         objectRotated = false;
 
@@ -49,6 +47,10 @@ public class ObjectPlacement : MonoBehaviour
         objectPlacedText.gameObject.SetActive(false);
         objectRotatedText.gameObject.SetActive(false);
         calibrationCompleteText.gameObject.SetActive(false);
+
+        placedObject = Instantiate(objectToPlace);
+        rotateAR = placedObject.GetComponentInChildren<ARObjectOrientation>();
+        placedObject.SetActive(false);
 
         raycastManager = FindObjectOfType<ARRaycastManager>();
     }
@@ -65,44 +67,21 @@ public class ObjectPlacement : MonoBehaviour
         if (isPlacementValid && Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-            if (!hasInstantiated)
+            if (touch.phase == TouchPhase.Began)
             {
-                if (touch.phase == TouchPhase.Began)
+                if (!objectPlaced)
                 {
-                    placedObject = Instantiate(objectToPlace);
-                    rotateAR = placedObject.GetComponentInChildren<ARObjectOrientation>();
-                    rotateAR.SetRotationButton(setRotationButton);
-                    hasInstantiated = true;
-
-                    if (!objectPlaced)
-                    {
-                        placedObject.transform.position = placementPose.position;
-                        objectPlacedText.gameObject.SetActive(true);
-                        objectPlaced = true;
-                    }
-                }
-
-                if (objectPlaced && !objectRotated)
-                {
-                    rotateAR.enabled = true;
+                    placedObject.SetActive(true);
+                    placedObject.transform.position = placementPose.position;
+                    objectPlacedText.gameObject.SetActive(true);
+                    objectPlaced = true;
                 }
             }
-            else
-            {
-                if (touch.phase == TouchPhase.Began)
-                {
-                    if (!objectPlaced)
-                    {
-                        placedObject.transform.position = placementPose.position;
-                        objectPlacedText.gameObject.SetActive(true);
-                        objectPlaced = true;
-                    }
-                }
 
-                if (objectPlaced && !objectRotated)
-                {
-                    rotateAR.enabled = true;
-                }
+            if (objectPlaced && !objectRotated)
+            {
+                rotateAR.SetRotationButton(setRotationButton);
+                rotateAR.enabled = true;
             }
         }
     }
