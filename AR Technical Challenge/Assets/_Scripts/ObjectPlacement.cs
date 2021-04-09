@@ -4,21 +4,23 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System;
 
 public class ObjectPlacement : MonoBehaviour
 {
     [SerializeField] private GameObject placementIndicator = null;
     [SerializeField] private GameObject objectToPlace = null;
-    [SerializeField] private Scene gameScene;
-    [SerializeField] private float rotateSpeed = 0.1f;
 
     [SerializeField] private GameObject nextButton = null;
+    [SerializeField] private Button setRotationButton = null;
     [SerializeField] private TMP_Text objectPlacedText = null;
     [SerializeField] private TMP_Text objectRotatedText = null;
     [SerializeField] private TMP_Text calibrationCompleteText = null;
 
     private ARRaycastManager raycastManager;
     private Pose placementPose;
+    private RotateARObject rotateAR;
     private bool isPlacementValid = false;
     private bool hasInstantiated = false;
     private bool objectPlaced = false;
@@ -27,18 +29,21 @@ public class ObjectPlacement : MonoBehaviour
 
     private void Start()
     {
+        setRotationButton.onClick.RemoveAllListeners();
+        setRotationButton.onClick.AddListener(SetARObjectRotation);
+
         hasInstantiated = false;
         objectPlaced = false;
         objectRotated = false;
 
         nextButton.SetActive(false);
+        setRotationButton.gameObject.SetActive(false);
         objectPlacedText.gameObject.SetActive(false);
         objectRotatedText.gameObject.SetActive(false);
         calibrationCompleteText.gameObject.SetActive(false);
 
         raycastManager = FindObjectOfType<ARRaycastManager>();
     }
-
 
     private void Update()
     {
@@ -57,26 +62,21 @@ public class ObjectPlacement : MonoBehaviour
                 if (touch.phase == TouchPhase.Began)
                 {
                     placedObject = Instantiate(objectToPlace);
+                    rotateAR = placedObject.GetComponent<RotateARObject>();
+                    rotateAR.SetRotationButton(setRotationButton);
                     hasInstantiated = true;
 
                     if (!objectPlaced)
                     {
                         placedObject.transform.position = placementPose.position;
-                        if (touch.phase == TouchPhase.Ended)
-                        {
-                            objectPlacedText.gameObject.SetActive(true);
-                            objectPlaced = true;
-                        }
+                        objectPlacedText.gameObject.SetActive(true);
+                        objectPlaced = true;
                     }
                 }
 
-                if (objectPlaced && !objectRotated && touch.phase == TouchPhase.Began)
+                if (objectPlaced && !objectRotated)
                 {
-                    RotateObject(touch);
-                    objectRotatedText.gameObject.SetActive(true);
-                    calibrationCompleteText.gameObject.SetActive(true);
-                    nextButton.SetActive(true);
-                    objectRotated = true;
+                    rotateAR.enabled = true;
                 }
             }
             else
@@ -86,37 +86,25 @@ public class ObjectPlacement : MonoBehaviour
                     if (!objectPlaced)
                     {
                         placedObject.transform.position = placementPose.position;
-                        if (touch.phase == TouchPhase.Ended)
-                        {
-                            objectPlacedText.gameObject.SetActive(true);
-                            objectPlaced = true;
-                        }
+                        objectPlacedText.gameObject.SetActive(true);
+                        objectPlaced = true;
                     }
                 }
 
-                if (objectPlaced && !objectRotated && touch.phase == TouchPhase.Began)
+                if (objectPlaced && !objectRotated)
                 {
-                    RotateObject(touch);
-                    objectRotatedText.gameObject.SetActive(true);
-                    calibrationCompleteText.gameObject.SetActive(true);
-                    nextButton.SetActive(true);
-                    objectRotated = true;
+                    rotateAR.enabled = true;
                 }
             }
         }
     }
 
-    private void RotateObject(Touch touch)
+    private void SetARObjectRotation()
     {
-        if (touch.phase == TouchPhase.Moved)
-        {
-            Quaternion rotation = Quaternion.Euler(-touch.deltaPosition.x * rotateSpeed, -touch.deltaPosition.y * rotateSpeed, 0f);
-            placedObject.transform.rotation = rotation * transform.rotation;
-        }
-        else
-        {
-            placedObject.transform.rotation = placementPose.rotation;
-        }
+        objectRotatedText.gameObject.SetActive(true);
+        calibrationCompleteText.gameObject.SetActive(true);
+        nextButton.SetActive(true);
+        objectRotated = true;
     }
 
     private void UpdatePlacementIndicator()
