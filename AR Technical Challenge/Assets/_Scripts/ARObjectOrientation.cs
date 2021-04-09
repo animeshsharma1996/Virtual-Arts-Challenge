@@ -5,23 +5,23 @@ using System.Collections.Generic;
 
 public class ARObjectOrientation : MonoBehaviour
 {
+    [SerializeField] private List<Transform> objectComponents = new List<Transform>();
     [SerializeField] private float rotationSpeed = 0.01f;
-    [SerializeField] private float expansionMin = 0f;
-    [SerializeField] private float expansionMax = 2f;
+    [SerializeField] private float maxDistanceComponent = 0.2f;
     [SerializeField] private float expansionSpeed = 0.1f;
-    
+
+    private float minDistanceComponent = 0f;
     private bool hasCalibrated = false;
     private Button setRotationButton;
     private Vector2 startPos;
     private Vector2 direction;
-    private List<Transform> objectComponents = new List<Transform>();
     private List<Transform> defaultComponents = new List<Transform>();
 
     private void Start()
     {
         hasCalibrated = false;
-        objectComponents = new List<Transform>(GetComponentsInChildren<Transform>());
         defaultComponents = objectComponents;
+        minDistanceComponent = (transform.position - objectComponents[1].position).magnitude;
     }
 
     private void Update()
@@ -52,7 +52,7 @@ public class ARObjectOrientation : MonoBehaviour
 
                 case TouchPhase.Moved:
                     direction = touch.position - startPos;
-                    transform.Rotate(-  direction.y * rotationSpeed, - direction.x * rotationSpeed, 0f);
+                    transform.Rotate(- direction.y * rotationSpeed, - direction.x * rotationSpeed, 0f);
                     setRotationButton.gameObject.SetActive(true);
                     break;
 
@@ -62,7 +62,7 @@ public class ARObjectOrientation : MonoBehaviour
 
     private void ExpandObjectByPinching()
     {
-        if(Input.touchCount == 2)
+        if (Input.touchCount == 2)
         {
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
@@ -71,18 +71,22 @@ public class ARObjectOrientation : MonoBehaviour
             float currentMagnitude = (touchOne.position - touchOne.deltaPosition).magnitude;
 
             float difference = currentMagnitude - prevMagnitude;
-            Mathf.Clamp(difference, expansionMin, expansionMax);
             ExpandObject(difference);
         }
     }
 
     private void ExpandObject(float difference)
     {
-        foreach(Transform childTransform in objectComponents)
+        foreach (Transform childTransform in objectComponents)
         {
             Vector3 alignedVector = childTransform.position - transform.position;
-            childTransform.transform.position = Vector3.Lerp(childTransform.transform.position, childTransform.transform.position + difference * alignedVector, Time.deltaTime  * expansionSpeed);
-            //childTransform.transform.position += alignedVector * difference * expansionSpeed;
+            Vector3 newPosComponent = Vector3.Lerp(childTransform.transform.position, childTransform.transform.position + difference * expansionSpeed * alignedVector, Time.deltaTime );
+
+            float distanceComponent = (transform.position - newPosComponent).magnitude;
+            if (distanceComponent >= minDistanceComponent && distanceComponent < maxDistanceComponent)
+            {
+                childTransform.transform.position = newPosComponent;
+            }
         }
     }
 
