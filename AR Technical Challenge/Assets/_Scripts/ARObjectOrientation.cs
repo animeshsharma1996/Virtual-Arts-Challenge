@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,7 +54,23 @@ public class ARObjectOrientation : MonoBehaviour
 
     private void ExpandObjectByPinching()
     {
+        if(Input.touchCount == 2)
+        {
+            Touch touchZero = Input.GetTouch(0);
+            Touch touchOne = Input.GetTouch(1);
 
+            float prevMagnitude = (touchZero.position - touchZero.deltaPosition).magnitude;
+            float currentMagnitude = (touchOne.position - touchOne.deltaPosition).magnitude;
+
+            float difference = currentMagnitude - prevMagnitude;
+
+            ExpandObject(difference);
+        }
+    }
+
+    private void ExpandObject(float difference)
+    {
+        throw new NotImplementedException();
     }
 
     public void SetRotationButton(Button button)
