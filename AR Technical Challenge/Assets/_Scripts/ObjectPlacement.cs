@@ -12,7 +12,7 @@ public class ObjectPlacement : MonoBehaviour
     [SerializeField] private GameObject placementIndicator = null;
     [SerializeField] private GameObject objectToPlace = null;
 
-    [SerializeField] private GameObject nextButton = null;
+    [SerializeField] private Button nextButton = null;
     [SerializeField] private Button setRotationButton = null;
     [SerializeField] private TMP_Text objectPlacedText = null;
     [SerializeField] private TMP_Text objectRotatedText = null;
@@ -20,7 +20,7 @@ public class ObjectPlacement : MonoBehaviour
 
     private ARRaycastManager raycastManager;
     private Pose placementPose;
-    private RotateARObject rotateAR;
+    private ARObjectOrientation rotateAR;
     private bool isPlacementValid = false;
     private bool hasInstantiated = false;
     private bool objectPlaced = false;
@@ -29,6 +29,9 @@ public class ObjectPlacement : MonoBehaviour
 
     private void Start()
     {
+        nextButton.onClick.RemoveAllListeners();
+        nextButton.onClick.AddListener(SetUpGameScene);
+
         setRotationButton.onClick.RemoveAllListeners();
         setRotationButton.onClick.AddListener(SetARObjectRotation);
 
@@ -36,7 +39,7 @@ public class ObjectPlacement : MonoBehaviour
         objectPlaced = false;
         objectRotated = false;
 
-        nextButton.SetActive(false);
+        nextButton.gameObject.SetActive(false);
         setRotationButton.gameObject.SetActive(false);
         objectPlacedText.gameObject.SetActive(false);
         objectRotatedText.gameObject.SetActive(false);
@@ -62,7 +65,7 @@ public class ObjectPlacement : MonoBehaviour
                 if (touch.phase == TouchPhase.Began)
                 {
                     placedObject = Instantiate(objectToPlace);
-                    rotateAR = placedObject.GetComponent<RotateARObject>();
+                    rotateAR = placedObject.GetComponent<ARObjectOrientation>();
                     rotateAR.SetRotationButton(setRotationButton);
                     hasInstantiated = true;
 
@@ -99,11 +102,23 @@ public class ObjectPlacement : MonoBehaviour
         }
     }
 
+    private void SetUpGameScene()
+    {
+        nextButton.gameObject.SetActive(false);
+        setRotationButton.gameObject.SetActive(false);
+        objectPlacedText.gameObject.SetActive(false);
+        objectRotatedText.gameObject.SetActive(false);
+        calibrationCompleteText.gameObject.SetActive(false);
+
+        rotateAR.SetHasCalibrated(true);
+    }
+
+
     private void SetARObjectRotation()
     {
         objectRotatedText.gameObject.SetActive(true);
         calibrationCompleteText.gameObject.SetActive(true);
-        nextButton.SetActive(true);
+        nextButton.gameObject.SetActive(true);
         objectRotated = true;
     }
 

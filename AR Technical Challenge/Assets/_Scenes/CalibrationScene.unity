@@ -860,7 +860,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   placementIndicator: {fileID: 508704877}
   objectToPlace: {fileID: 4407338177334304044, guid: fd298e202e34bbd48b31475320eb52ec, type: 3}
-  rotateSpeed: 0.01
   nextButton: {fileID: 1260631124}
   setRotationButton: {fileID: 1772578204}
   objectPlacedText: {fileID: 697391189}
@@ -1153,19 +1152,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1260631127}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 957770432}
-        m_TargetAssemblyTypeName: AppDrive, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: GameScene
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1260631127
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,19 +1,33 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RotateARObject : MonoBehaviour
+public class ARObjectOrientation : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 0.01f;
+    
+    private bool hasCalibrated = false;
     private Button setRotationButton;
     private Vector2 startPos;
     private Vector2 direction;
 
-    public void SetRotationButton(Button button)
+    private void Start()
     {
-        setRotationButton = button;
-    }   
-    
+        hasCalibrated = false;
+    }
+
     private void Update()
+    {
+        if (!hasCalibrated)
+        {
+            RotateObjectBySwipe();
+        }
+        else
+        {
+            ExpandObjectByPinching();
+        }
+    }
+
+    private void RotateObjectBySwipe()
     {
         // Track a single touch as a direction control.
         if (Input.touchCount > 0)
@@ -36,5 +50,20 @@ public class RotateARObject : MonoBehaviour
 
             }
         }
+    }
+
+    private void ExpandObjectByPinching()
+    {
+
+    }
+
+    public void SetRotationButton(Button button)
+    {
+        setRotationButton = button;
+    }
+
+    public void SetHasCalibrated(bool value)
+    {
+        hasCalibrated = value;
     }
 }
