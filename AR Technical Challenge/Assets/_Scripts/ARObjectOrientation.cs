@@ -19,7 +19,7 @@ public class ARObjectOrientation : MonoBehaviour
 
     private void Start()
     {
-        hasCalibrated = false;
+        hasCalibrated = true;
         defaultComponents = objectComponents;
         minDistanceComponent = (transform.position - objectComponents[0].position).magnitude;
     }
@@ -50,7 +50,7 @@ public class ARObjectOrientation : MonoBehaviour
 
                 case TouchPhase.Moved:
                     direction = touch.position - startPos;
-                    transform.Rotate(0f, - direction.x * rotationSpeed, 0f);
+                    transform.Rotate(direction.y * rotationSpeed, - direction.x * rotationSpeed, 0f);
                     setRotationButton.gameObject.SetActive(true);
                     break;
             }
