@@ -75,6 +75,7 @@ public class ObjectPlacement : MonoBehaviour
                     placedObject.transform.position = placementPose.position;
                     objectPlacedText.gameObject.SetActive(true);
                     objectPlaced = true;
+                    placementIndicator.SetActive(true);
                 }
             }
 

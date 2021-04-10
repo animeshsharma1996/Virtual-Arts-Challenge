@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class ARObjectOrientation : MonoBehaviour
 {
     [SerializeField] private List<Transform> objectComponents = new List<Transform>();
+    [SerializeField] private List<ResetTranform> resetTranforms = new List<ResetTranform>();
     [SerializeField] private float rotationSpeed = 0.01f;
     [SerializeField] private float maxDistanceComponent = 0.2f;
     [SerializeField] private float expansionSpeed = 0.1f;
@@ -15,12 +16,10 @@ public class ARObjectOrientation : MonoBehaviour
     private Button setRotationButton;
     private Vector2 startPos;
     private Vector2 direction;
-    private List<Transform> defaultComponents = new List<Transform>();
 
     private void Start()
     {
-        hasCalibrated = true;
-        defaultComponents = objectComponents;
+        hasCalibrated = false;
         minDistanceComponent = (transform.position - objectComponents[0].position).magnitude;
     }
 
@@ -108,11 +107,9 @@ public class ARObjectOrientation : MonoBehaviour
 
     public void ResetTransformsComponents()
     {
-        int index = 0;
-        foreach (Transform childTransform in objectComponents)
+        foreach (ResetTranform resetTranform in resetTranforms)
         {
-            childTransform.position = defaultComponents[index].position;
-            ++index;
+            resetTranform.ReinstatePositions();
         }
     }
 
