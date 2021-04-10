@@ -110,6 +110,7 @@ public class ObjectPlacement : MonoBehaviour
 
     private void Recalibrate()
     {
+        rotateAR.SetHasCalibrated(false);
         rotateAR.ResetTransformsComponents();
 
         objectPlaced = false;
@@ -117,7 +118,6 @@ public class ObjectPlacement : MonoBehaviour
 
         recalibrateButton.gameObject.SetActive(false);
         gameSceneText.gameObject.SetActive(false);
-        rotateAR.SetHasCalibrated(false);
     }
 
     private void UpdatePlacementIndicator()

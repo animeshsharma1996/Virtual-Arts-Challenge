@@ -21,7 +21,7 @@ public class ARObjectOrientation : MonoBehaviour
     {
         hasCalibrated = false;
         defaultComponents = objectComponents;
-        minDistanceComponent = (transform.position - objectComponents[1].position).magnitude;
+        minDistanceComponent = (transform.position - objectComponents[0].position).magnitude;
     }
 
     private void Update()
@@ -38,12 +38,10 @@ public class ARObjectOrientation : MonoBehaviour
 
     private void RotateObjectBySwipe()
     {
-        // Track a single touch as a direction control.
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
 
-            // Handle finger movements based on TouchPhase
             switch (touch.phase)
             {
                 case TouchPhase.Began:
@@ -52,10 +50,9 @@ public class ARObjectOrientation : MonoBehaviour
 
                 case TouchPhase.Moved:
                     direction = touch.position - startPos;
-                    transform.Rotate(- direction.y * rotationSpeed, - direction.x * rotationSpeed, 0f);
+                    transform.Rotate(0f, - direction.x * rotationSpeed, 0f);
                     setRotationButton.gameObject.SetActive(true);
                     break;
-
             }
         }
     }
@@ -67,11 +64,29 @@ public class ARObjectOrientation : MonoBehaviour
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
-            float prevMagnitude = (touchZero.position - touchZero.deltaPosition).magnitude;
-            float currentMagnitude = (touchOne.position - touchOne.deltaPosition).magnitude;
+            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
 
-            float difference = currentMagnitude - prevMagnitude;
+            float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+            float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
+
+            float difference =   currentMagnitude - prevMagnitude;
             ExpandObject(difference);
+        }
+        else
+        {
+            foreach (Transform childTransform in objectComponents)
+            {
+                Vector3 alignedVector = childTransform.position - transform.position;
+                Vector3 newPosComponent = childTransform.transform.position;
+                newPosComponent = Vector3.Lerp(newPosComponent, childTransform.transform.position + Input.GetAxis("Mouse ScrollWheel") * 10.0f * alignedVector, Time.deltaTime*10.0f);
+
+                float distanceComponent = (transform.position - newPosComponent).magnitude;
+                if (distanceComponent >= minDistanceComponent && distanceComponent < maxDistanceComponent)
+                {
+                    childTransform.transform.position = newPosComponent;
+                }
+            }
         }
     }
 
@@ -80,7 +95,8 @@ public class ARObjectOrientation : MonoBehaviour
         foreach (Transform childTransform in objectComponents)
         {
             Vector3 alignedVector = childTransform.position - transform.position;
-            Vector3 newPosComponent = Vector3.Lerp(childTransform.transform.position, childTransform.transform.position + difference * expansionSpeed * alignedVector, Time.deltaTime );
+            Vector3 newPosComponent = childTransform.transform.position;
+            newPosComponent = Vector3.Lerp(newPosComponent, childTransform.transform.position + difference * expansionSpeed * alignedVector, Time.deltaTime );
 
             float distanceComponent = (transform.position - newPosComponent).magnitude;
             if (distanceComponent >= minDistanceComponent && distanceComponent < maxDistanceComponent)
@@ -92,7 +108,12 @@ public class ARObjectOrientation : MonoBehaviour
 
     public void ResetTransformsComponents()
     {
-        objectComponents = defaultComponents;
+        int index = 0;
+        foreach (Transform childTransform in objectComponents)
+        {
+            childTransform.position = defaultComponents[index].position;
+            ++index;
+        }
     }
 
     public void SetRotationButton(Button button)
