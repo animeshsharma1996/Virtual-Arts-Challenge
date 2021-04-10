@@ -1,16 +1,16 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class ARObjectOrientation : MonoBehaviour
 {
-    [SerializeField] private List<Transform> objectComponents = new List<Transform>();
-    [SerializeField] private List<ResetTranform> resetTranforms = new List<ResetTranform>();
+    [SerializeField] private List<Transform> objectComponents = new List<Transform>();  //List of the components of the objects
+    [SerializeField] private List<ResetTranform> resetTranforms = new List<ResetTranform>(); //List of ResetTransform class handling to reset the transform of the components
     [SerializeField] private float rotationSpeed = 0.01f;
-    [SerializeField] private float maxDistanceComponent = 0.2f;
+    [SerializeField] private float maxDistanceComponent = 0.2f; //Max distance upto which the components can expand
     [SerializeField] private float expansionSpeed = 0.1f;
 
+    //Min distance upto which the components can shrink so that they don't go inside the object
     private float minDistanceComponent = 0f;
     private bool hasCalibrated = false;
     private Button setRotationButton;
@@ -35,6 +35,7 @@ public class ARObjectOrientation : MonoBehaviour
         }
     }
 
+    //Swiping rotates the object in two axes, horizontal and vertical
     private void RotateObjectBySwipe()
     {
         if (Input.touchCount > 0)
@@ -56,6 +57,7 @@ public class ARObjectOrientation : MonoBehaviour
         }
     }
 
+    //Pinch gesture logic by touch
     private void ExpandObjectByPinching()
     {
         if (Input.touchCount == 2)
@@ -69,26 +71,12 @@ public class ARObjectOrientation : MonoBehaviour
             float prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
             float currentMagnitude = (touchZero.position - touchOne.position).magnitude;
 
-            float difference =   currentMagnitude - prevMagnitude;
+            float difference = currentMagnitude - prevMagnitude;
             ExpandObject(difference);
-        }
-        else
-        {
-            foreach (Transform childTransform in objectComponents)
-            {
-                Vector3 alignedVector = childTransform.position - transform.position;
-                Vector3 newPosComponent = childTransform.transform.position;
-                newPosComponent = Vector3.Lerp(newPosComponent, childTransform.transform.position + Input.GetAxis("Mouse ScrollWheel") * 10.0f * alignedVector, Time.deltaTime*10.0f);
-
-                float distanceComponent = (transform.position - newPosComponent).magnitude;
-                if (distanceComponent >= minDistanceComponent && distanceComponent < maxDistanceComponent)
-                {
-                    childTransform.transform.position = newPosComponent;
-                }
-            }
         }
     }
 
+    //Expand the components of the object based on pinch
     private void ExpandObject(float difference)
     {
         foreach (Transform childTransform in objectComponents)
