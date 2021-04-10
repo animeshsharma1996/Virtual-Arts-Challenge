@@ -3,11 +3,9 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using TMPro;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System;
 
-public class ObjectPlacement : MonoBehaviour
+public class ARBehaviour : MonoBehaviour
 {
     [SerializeField] private GameObject placementIndicator = null;
     [SerializeField] private GameObject objectToPlace = null;
@@ -62,6 +60,7 @@ public class ObjectPlacement : MonoBehaviour
         UpdateObjectPlacement();
     }
 
+    //Place object upon touching when Indicator appears
     private void UpdateObjectPlacement()
     {
         if (isPlacementValid && Input.touchCount > 0)
@@ -86,6 +85,7 @@ public class ObjectPlacement : MonoBehaviour
         }
     }
 
+    //Setting up the game scene
     private void SetUpGameScene()
     {
         nextButton.gameObject.SetActive(false);
@@ -99,7 +99,7 @@ public class ObjectPlacement : MonoBehaviour
         rotateAR.SetHasCalibrated(true);
     }
 
-
+    //Set the Object Rotation after SetRotation is pressed
     private void SetARObjectRotation()
     {
         objectRotatedText.gameObject.SetActive(true);
@@ -108,8 +108,10 @@ public class ObjectPlacement : MonoBehaviour
         objectRotated = true;
     }
 
+    //Back to Calibration Scene
     private void Recalibrate()
     {
+        rotateAR.SetHasCalibrated(false);
         rotateAR.ResetTransformsComponents();
 
         objectPlaced = false;
@@ -117,9 +119,9 @@ public class ObjectPlacement : MonoBehaviour
 
         recalibrateButton.gameObject.SetActive(false);
         gameSceneText.gameObject.SetActive(false);
-        rotateAR.SetHasCalibrated(false);
     }
 
+    //If planes are found, Placement Indicator appears else it disappears
     private void UpdatePlacementIndicator()
     {
         if(isPlacementValid)
@@ -133,6 +135,7 @@ public class ObjectPlacement : MonoBehaviour
         }
     }
 
+    //Updates the placement indicator when camera points at Estimated Plane
     private void UpdatePlacementPose()
     {
         Vector3 screenCenter = Camera.main.ViewportToScreenPoint(new Vector3(0.5f,0.5f));
